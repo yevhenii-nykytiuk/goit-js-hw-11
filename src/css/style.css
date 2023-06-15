@@ -1,0 +1,15 @@
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 20px;
+}
+
+/* .photo-card {
+  display: flex;
+  
+} */
+
+/* .info {
+  display: flex;
+  flex-wrap: wrap;
+} */
