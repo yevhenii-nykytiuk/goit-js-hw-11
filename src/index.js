@@ -74,8 +74,11 @@ async function hendleFormSearchGallery(e) {
     return;
   }
 
-  const response = await fetchImages(searchValue, page, perPage);
-   
+
+  try {
+
+    const response = await fetchImages(searchValue, page, perPage);
+
     if (response.totalHits === 0) {
       onError();
     } else {
@@ -83,6 +86,10 @@ async function hendleFormSearchGallery(e) {
       showBtnLoadMore()
       Notiflix.Notify.success(`Hooray! We found ${response.totalHits} images.`);
     }
+  } catch (error) {
+    console.log(error);
+   }
+    
 
   e.target.reset();
 }
@@ -94,7 +101,9 @@ async function hendlePageLoadMore() {
 
   page += 1;
 
-  const response = await fetchImages(searchValue, page, perPage)
+  try {
+
+    const response = await fetchImages(searchValue, page, perPage)
 
     createGallery(response.hits);
 
@@ -105,6 +114,10 @@ async function hendlePageLoadMore() {
       onErrorResultImages();
       return;
     }
+    
+  } catch (error) {
+    console.log(error);
+  }
 
 }
 
@@ -124,13 +137,13 @@ function onErrorResultImages() {
   Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.")
 }
 
-// function disabledBtnLoadMore() {
-//   loadBtnGallery.setAttribute("disabled", false);
-// }
+function disabledBtnLoadMore() {
+  loadBtnGallery.setAttribute("disabled", false);
+}
 
-// function enabledBtnLoadMore() {
-//   loadBtnGallery.setAttribute("disabled", true);
-// };
+function enabledBtnLoadMore() {
+  loadBtnGallery.setAttribute("disabled", true);
+};
 
 function showBtnLoadMore() {
   loadBtnGallery.style.display = "block";
