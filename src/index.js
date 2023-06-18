@@ -59,7 +59,7 @@ function createGallery(pictures) {
 
 
 
-function hendleFormSearchGallery(e) {
+async function hendleFormSearchGallery(e) {
 
   e.preventDefault();
 
@@ -74,42 +74,37 @@ function hendleFormSearchGallery(e) {
     return;
   }
 
-  fetchImages(searchValue, page, perPage).then(({ data }) => {
+  const response = await fetchImages(searchValue, page, perPage);
    
-    if (data.totalHits === 0) {
+    if (response.totalHits === 0) {
       onError();
     } else {
-      createGallery(data.hits);
+      createGallery(response.hits);
       showBtnLoadMore()
-      Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+      Notiflix.Notify.success(`Hooray! We found ${response.totalHits} images.`);
     }
 
-
-  }).catch((error) => console.log(error));
-
-  e.currentTarget.reset();
+  e.target.reset();
 }
 
 
 
 
-function hendlePageLoadMore() {
+async function hendlePageLoadMore() {
 
   page += 1;
 
-  fetchImages(searchValue, page, perPage).then(({ data }) => {
+  const response = await fetchImages(searchValue, page, perPage)
 
-    createGallery(data.hits);
+    createGallery(response.hits);
 
-    const totalPages = data.totalHits / perPage;
+    const totalPages = response.totalHits / perPage;
 
     if (page > totalPages) {
-      hideBtnLoadMore()
-      onGood();
+      hideBtnLoadMore();
+      onErrorResultImages();
       return;
     }
-
-  }).catch((error) => console.log(error));
 
 }
 
@@ -125,19 +120,17 @@ function onError() {
   Notiflix.Notify.failure('Error!!!');
 }
 
-function onGood() {
+function onErrorResultImages() {
   Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.")
 }
 
+// function disabledBtnLoadMore() {
+//   loadBtnGallery.setAttribute("disabled", false);
+// }
 
-
-function disabledBtnLoadMore() {
-  loadBtnGallery.setAttribute("disabled", false);
-}
-
-function enabledBtnLoadMore() {
-  loadBtnGallery.setAttribute("disabled", true);
-}
+// function enabledBtnLoadMore() {
+//   loadBtnGallery.setAttribute("disabled", true);
+// };
 
 function showBtnLoadMore() {
   loadBtnGallery.style.display = "block";
