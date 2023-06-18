@@ -8,7 +8,7 @@ const galleryMarkup = document.querySelector(".gallery");
 const loadBtnGallery = document.querySelector(".load-more");
 
 let page = 1;
-let perPage = 5;
+let perPage = 40;
 let searchValue = "";
 
 searchGalleryForm.addEventListener("submit", hendleFormSearchGallery);
@@ -71,12 +71,19 @@ function hendleFormSearchGallery(e) {
 
   if (searchValue === "") {
     onError();
+    return;
   }
 
-  fetchImages(searchValue, page, perPage).then(({data}) => {
+  fetchImages(searchValue, page, perPage).then(({ data }) => {
+   
+    if (data.totalHits === 0) {
+      onError();
+    } else {
+      createGallery(data.hits);
+      showBtnLoadMore()
+      Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+    }
 
-    createGallery(data.hits);
-    showBtnLoadMore()
 
   }).catch((error) => console.log(error));
 
@@ -91,8 +98,18 @@ function hendlePageLoadMore() {
   page += 1;
 
   fetchImages(searchValue, page, perPage).then(({ data }) => {
+
     createGallery(data.hits);
-  });
+
+    const totalPages = data.totalHits / perPage;
+
+    if (page > totalPages) {
+      hideBtnLoadMore()
+      onGood();
+      return;
+    }
+
+  }).catch((error) => console.log(error));
 
 }
 
@@ -105,7 +122,11 @@ function clearMarkup() {
 
 
 function onError() {
-  throw new Error(Notiflix.Notify.failure('Qui timide rogat docet negare'));
+  Notiflix.Notify.failure('Error!!!');
+}
+
+function onGood() {
+  Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.")
 }
 
 
